@@ -364,8 +364,15 @@ subprojects {
     configure<NodeExtension> {
       version.set("20.9.0")
       pnpmVersion.set("9.x")
+      distBaseUrl.set("https://mirrors.huaweicloud.com/nodejs")
       nodeProjectDir.set(file("$rootDir/.node"))
       download.set(true)
+    }
+    tasks.named<com.github.gradle.node.npm.task.NpmSetupTask>("npmSetup") {
+      args.addAll(listOf("--registry", "https://mirrors.tuna.tsinghua.edu.cn"))
+    }
+    tasks.named<com.github.gradle.node.pnpm.task.PnpmInstallTask>("pnpmInstall"){
+      args.addAll(listOf("--registry", "https://mirrors.tuna.tsinghua.edu.cn"))
     }
   }
 
@@ -753,6 +760,7 @@ tasks {
       ":catalogs:catalog-jdbc-doris:copyLibAndConfig",
       ":catalogs:catalog-jdbc-mysql:copyLibAndConfig",
       ":catalogs:catalog-jdbc-postgresql:copyLibAndConfig",
+	  ":catalogs:catalog-jdbc-wutong:copyLibAndConfig",
       ":catalogs:catalog-hadoop:copyLibAndConfig",
       ":catalogs:catalog-kafka:copyLibAndConfig"
     )
