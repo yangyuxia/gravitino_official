@@ -166,38 +166,38 @@ export const providers = [
     ]
   },
   {
-      label: 'Wutong',
-      value: 'jdbc-wutong',
-      defaultProps: [
-        {
-          key: 'jdbc-driver',
-          value: '',
-          required: true,
-          description: 'e.g. org.postgresql.Driver'
-        },
-        {
-          key: 'jdbc-url',
-          value: '',
-          required: true,
-          description: 'e.g. jdbc:postgresql://localhost:5432/your_database'
-        },
-        {
-          key: 'jdbc-user',
-          value: '',
-          required: true
-        },
-        {
-          key: 'jdbc-password',
-          value: '',
-          required: true
-        },
-        {
-          key: 'jdbc-database',
-          value: '',
-          required: true
-        }
-      ]
-    },
+    label: 'Wutong',
+    value: 'jdbc-wutong',
+    defaultProps: [
+      {
+        key: 'jdbc-driver',
+        value: '',
+        required: true,
+        description: 'e.g. org.postgresql.Driver'
+      },
+      {
+        key: 'jdbc-url',
+        value: '',
+        required: true,
+        description: 'e.g. jdbc:postgresql://localhost:5432/your_database'
+      },
+      {
+        key: 'jdbc-user',
+        value: '',
+        required: true
+      },
+      {
+        key: 'jdbc-password',
+        value: '',
+        required: true
+      },
+      {
+        key: 'jdbc-database',
+        value: '',
+        required: true
+      }
+    ]
+  },
   {
     label: 'Apache Doris',
     value: 'jdbc-doris',
