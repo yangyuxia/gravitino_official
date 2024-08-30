@@ -50,7 +50,7 @@ public class DefaultCatalogConnectorFactory implements CatalogConnectorFactory {
     catalogBuilders.put(
         "jdbc-postgresql", new CatalogConnectorContext.Builder(new PostgreSQLConnectorAdapter()));
     catalogBuilders.put(
-            "jdbc-wutong", new CatalogConnectorContext.Builder(new WutongConnectorAdapter()));
+        "jdbc-wutong", new CatalogConnectorContext.Builder(new WutongConnectorAdapter()));
     LOG.info("Start the DefaultCatalogConnectorFactory");
   }
 

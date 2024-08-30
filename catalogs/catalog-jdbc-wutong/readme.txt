@@ -1,44 +1,110 @@
 gravitino REST API调用
 -----------------------------------------------------------------------------------
+一、metalake操作
 1、创建metalake
 curl -X POST -H "Accept: application/vnd.gravitino.v1+json" \
 -H "Content-Type: application/json" \
--d '{"name":"metalake","comment":"Test metalake"}' http://localhost:8090/api/metalakes
+-d '{"name":"test","comment":"Test metalake"}' http://localhost:8090/api/metalakes
 
-2、创建catalog
+
+二、catalog操作
+1、创建catalog
 curl -X POST -H "Accept: application/vnd.gravitino.v1+json" \
 -H "Content-Type: application/json" -d '{
-  "name": "catalog",
+  "name": "wutong_catalog",
   "type": "RELATIONAL",
   "comment": "comment",
   "provider": "jdbc-wutong",
   "properties": {
-    "jdbc-url": "jdbc:postgresql://localhost:5432/testdb",
+    "jdbc-url": "jdbc:postgresql://192.168.94.131:5432/wutongdb",
     "jdbc-driver": "org.postgresql.Driver",
-    "jdbc-database": "testdb",
+    "jdbc-database": "wutongdb",
     "jdbc-user": "postgres",
-    "jdbc-password": "chenzhizhou98"
+    "jdbc-password": "postgres"
   }
-}' http://localhost:8090/api/metalakes/metalake/catalogs
+}' http://localhost:8090/api/metalakes/test/catalogs
 
-3、展示所有catalog
+
+2、list展示所有catalog
 curl -X GET -H "Accept: application/vnd.gravitino.v1+json" \
 -H "Content-Type: application/json" \
-http://localhost:8090/api/metalakes/metalake/catalogs
+http://localhost:8090/api/metalakes/test/catalogs
 
-4、加载catalog
 curl -X GET -H "Accept: application/vnd.gravitino.v1+json" \
--H "Content-Type: application/json" http://localhost:8090/api/metalakes/metalake/catalogs/catalog
+-H "Content-Type: application/json" \
+http://localhost:8090/api/metalakes/test/catalogs?details=true
+
+3、查看某个catalog的详细信息
+curl -X GET -H "Accept: application/vnd.gravitino.v1+json" \
+-H "Content-Type: application/json" http://localhost:8090/api/metalakes/test/catalogs/wutong_catalog
+
+4、修改catalog信息
+curl -X PUT -H "Accept: application/vnd.gravitino.v1+json" \
+-H "Content-Type: application/json" -d '{
+  "updates": [
+    {
+      "@type": "rename",
+      "newName": "wutong_catalog"
+    },
+    {
+      "@type": "setProperty",
+      "property": "jdbc-user",
+      "value": "postgres"
+    }
+  ]
+}' http://localhost:8090/api/metalakes/test/catalogs/wutong_catalog
+
+5、删除catalog
+#如果该catalog下有schema、table等信息，需要先用restApi删除这些表（如果 cascade 为 true，会删除真实的schema、表)
+curl -X DELETE -H "Accept: application/vnd.gravitino.v1+json" \
+-H "Content-Type: application/json" \
+http://localhost:8090/api/metalakes/test/catalogs/wutong_catalog/schemas/public?cascade=true
+
+#然后才能删除catalog（不删除数据对应的真实的database）
+curl -X DELETE -H "Accept: application/vnd.gravitino.v1+json" \
+-H "Content-Type: application/json" \
+http://localhost:8090/api/metalakes/test/catalogs/wutong_catalog
 
 
-5、创建schema---postgresql不支持properties
+三、schema操作
+1、创建schema---postgresql不支持properties: 会在postgresql数据库中create scheam。
 curl -X POST -H "Accept: application/vnd.gravitino.v1+json" \
 -H "Content-Type: application/json" -d '{
-  "name": "schema",
+  "name": "test_schema",
   "comment": "comment"
-}' http://localhost:8090/api/metalakes/metalake/catalogs/catalog/schemas
+}' http://localhost:8090/api/metalakes/test/catalogs/wutong_catalog/schemas
 
-6、创建表table
+2、list某个catalog下所有的schema
+curl -X GET -H "Accept: application/vnd.gravitino.v1+json" \
+-H "Content-Type: application/json" http://localhost:8090/api/metalakes/test/catalogs/wutong_catalog/schemas
+
+3、查看schema详细信息
+curl -X GET \-H "Accept: application/vnd.gravitino.v1+json" \
+-H "Content-Type: application/json" \
+http://localhost:8090/api/metalakes/test/catalogs/wutong_catalog/schemas/test_schema
+
+4、修改schema信息: postgresql定义schema不支持自定义Properties
+curl -X PUT -H "Accept: application/vnd.gravitino.v1+json" \
+-H "Content-Type: application/json" -d '{
+  "updates": [
+    {
+      "@type": "removeProperty",
+      "property": "key2"
+    }, {
+      "@type": "setProperty",
+      "property": "key3",
+      "value": "value3"
+    }
+  ]
+}' http://localhost:8090/api/metalakes/test/catalogs/wutong_catalog/schemas/schema
+
+5、删除schema：
+curl -X DELETE -H "Accept: application/vnd.gravitino.v1+json" \
+-H "Content-Type: application/json" \
+http://localhost:8090/api/metalakes/test/catalogs/wutong_catalog/schemas/public?cascade=true
+
+四、表操作
+1、创建表table: Doesn't support table properties.
 curl -X POST -H "Accept: application/vnd.gravitino.v1+json" \
 -H "Content-Type: application/json" -d '{
   "name": "example_table",
@@ -89,10 +155,35 @@ curl -X POST -H "Accept: application/vnd.gravitino.v1+json" \
       "fieldNames": [["id"]]
     }
   ]
-}' http://localhost:8090/api/metalakes/metalake/catalogs/catalog/schemas/schema/tables
+}' http://localhost:8090/api/metalakes/test/catalogs/wutong_catalog/schemas/test_schema/tables
 
-7、显示所有table
+2、list某个schema下的所有table
 curl -X GET -H "Accept: application/vnd.gravitino.v1+json" \
 -H "Content-Type: application/json" \
-http://localhost:8090/api/metalakes/metalake/catalogs/catalog/schemas/schema/tables
+http://localhost:8090/api/metalakes/test/catalogs/wutong_catalog/schemas/test_schema/tables
 
+3、查看某个table的详细信息
+curl -X GET -H "Accept: application/vnd.gravitino.v1+json" \
+-H "Content-Type: application/json"  \
+http://localhost:8090/api/metalakes/test/catalogs/wutong_catalog/schemas/test_schema/tables/example_table
+
+
+4、修改table信息
+curl -X PUT -H "Accept: application/vnd.gravitino.v1+json" \
+-H "Content-Type: application/json" -d '{
+  "updates": [
+    {"@type":"rename","newName":"table_renamed"}
+  ]  
+}' http://localhost:8090/api/metalakes/test/catalogs/wutong_catalog/schemas/test_schema/tables/example_table
+
+5、删除table
+## Purge can be true or false, if purge is true, Gravitino will remove the data from the table.
+
+curl -X DELETE -H "Accept: application/vnd.gravitino.v1+json" \
+-H "Content-Type: application/json" \
+http://localhost:8090/api/metalakes/test/catalogs/wutong_catalog/schemas/test_schema/tables/table_renamed?purge=false
+
+删除表有两种方法：dropTable 和 purgeTable：
+>>如果表是内部表，dropTable 会从文件系统中删除与表关联的元数据和目录。如果是外部表，则仅删除关联的元数据。
+>>purgeTable 会完全删除与表关联的元数据和directory并跳过trash。如果表是外部表或directory不支持purge表，则会抛出 UnsupportedOperationException。
+>>Hive catalog 和 lakehouse-iceberg catalog 支持 purgeTable，而 jdbc-mysql、jdbc-postgresql 和 lakehouse-paimon catalog 不支持。
