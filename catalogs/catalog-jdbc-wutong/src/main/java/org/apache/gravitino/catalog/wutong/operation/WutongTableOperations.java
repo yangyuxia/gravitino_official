@@ -6,23 +6,6 @@ package org.apache.gravitino.catalog.wutong.operation;
 
 import static org.apache.gravitino.rel.Column.DEFAULT_VALUE_NOT_SET;
 
-import org.apache.gravitino.StringIdentifier;
-import org.apache.gravitino.catalog.jdbc.JdbcColumn;
-import org.apache.gravitino.catalog.jdbc.JdbcTable;
-import org.apache.gravitino.catalog.jdbc.config.JdbcConfig;
-import org.apache.gravitino.catalog.jdbc.converter.JdbcColumnDefaultValueConverter;
-import org.apache.gravitino.catalog.jdbc.converter.JdbcExceptionConverter;
-import org.apache.gravitino.catalog.jdbc.converter.JdbcTypeConverter;
-import org.apache.gravitino.catalog.jdbc.operation.JdbcTableOperations;
-import org.apache.gravitino.exceptions.NoSuchColumnException;
-import org.apache.gravitino.exceptions.NoSuchTableException;
-import org.apache.gravitino.rel.Column;
-import org.apache.gravitino.rel.TableChange;
-import org.apache.gravitino.rel.expressions.distributions.Distribution;
-import org.apache.gravitino.rel.expressions.distributions.Distributions;
-import org.apache.gravitino.rel.expressions.transforms.Transform;
-import org.apache.gravitino.rel.indexes.Index;
-import org.apache.gravitino.rel.types.Types;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import java.sql.Connection;
@@ -40,8 +23,25 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.gravitino.StringIdentifier;
+import org.apache.gravitino.catalog.jdbc.JdbcColumn;
+import org.apache.gravitino.catalog.jdbc.JdbcTable;
+import org.apache.gravitino.catalog.jdbc.config.JdbcConfig;
+import org.apache.gravitino.catalog.jdbc.converter.JdbcColumnDefaultValueConverter;
+import org.apache.gravitino.catalog.jdbc.converter.JdbcExceptionConverter;
+import org.apache.gravitino.catalog.jdbc.converter.JdbcTypeConverter;
+import org.apache.gravitino.catalog.jdbc.operation.JdbcTableOperations;
+import org.apache.gravitino.exceptions.NoSuchColumnException;
+import org.apache.gravitino.exceptions.NoSuchTableException;
+import org.apache.gravitino.rel.Column;
+import org.apache.gravitino.rel.TableChange;
+import org.apache.gravitino.rel.expressions.distributions.Distribution;
+import org.apache.gravitino.rel.expressions.distributions.Distributions;
+import org.apache.gravitino.rel.expressions.transforms.Transform;
+import org.apache.gravitino.rel.indexes.Index;
+import org.apache.gravitino.rel.types.Types;
 
-/** Table operations for PostgreSQL. */
+/** Table operations for WuTongDB. */
 public class WutongTableOperations extends JdbcTableOperations {
 
   public static final String PG_QUOTE = "\"";
@@ -52,8 +52,8 @@ public class WutongTableOperations extends JdbcTableOperations {
   public static final String COLUMN_COMMENT = "COMMENT ON COLUMN ";
   public static final String TABLE_COMMENT = "COMMENT ON TABLE ";
 
-  private static final String POSTGRESQL_NOT_SUPPORT_NESTED_COLUMN_MSG =
-      "PostgreSQL does not support nested column names.";
+  private static final String WUTONGDB_NOT_SUPPORT_NESTED_COLUMN_MSG =
+      "WuTongDB does not support nested column names.";
 
   private String database;
 
@@ -69,7 +69,7 @@ public class WutongTableOperations extends JdbcTableOperations {
     database = new JdbcConfig(conf).getJdbcDatabase();
     Preconditions.checkArgument(
         StringUtils.isNotBlank(database),
-        "The `jdbc-database` configuration item is mandatory in PostgreSQL.");
+        "The `jdbc-database` configuration item is mandatory in WuTongDB.");
   }
 
   @Override
@@ -105,10 +105,10 @@ public class WutongTableOperations extends JdbcTableOperations {
       Index[] indexes) {
     if (ArrayUtils.isNotEmpty(partitioning)) {
       throw new UnsupportedOperationException(
-          "Currently we do not support Partitioning in PostgreSQL");
+          "Currently we do not support Partitioning in WuTongDB");
     }
     Preconditions.checkArgument(
-        Distributions.NONE.equals(distribution), "PostgreSQL does not support distribution");
+        Distributions.NONE.equals(distribution), "WuTongDB does not support distribution");
 
     StringBuilder sqlBuilder = new StringBuilder();
     sqlBuilder
@@ -190,7 +190,7 @@ public class WutongTableOperations extends JdbcTableOperations {
           sqlBuilder.append(" UNIQUE (").append(fieldStr).append(")");
           break;
         default:
-          throw new IllegalArgumentException("PostgreSQL doesn't support index : " + index.type());
+          throw new IllegalArgumentException("WuTongDB doesn't support index : " + index.type());
       }
     }
   }
@@ -201,7 +201,7 @@ public class WutongTableOperations extends JdbcTableOperations {
             colNames -> {
               if (colNames.length > 1) {
                 throw new IllegalArgumentException(
-                    "Index does not support complex fields in PostgreSQL");
+                    "Index does not support complex fields in WuTongDB");
               }
               return PG_QUOTE + colNames[0] + PG_QUOTE;
             })
@@ -251,7 +251,7 @@ public class WutongTableOperations extends JdbcTableOperations {
   @Override
   protected String generatePurgeTableSql(String tableName) {
     throw new UnsupportedOperationException(
-        "PostgreSQL does not support purge table in Gravitino, please use drop table");
+        "WuTongDB does not support purge table in Gravitino, please use drop table");
   }
 
   @Override
@@ -267,7 +267,7 @@ public class WutongTableOperations extends JdbcTableOperations {
       } else if (change instanceof TableChange.SetProperty) {
         throw new IllegalArgumentException("Set property is not supported yet");
       } else if (change instanceof TableChange.RemoveProperty) {
-        // PostgreSQL does not support deleting table attributes, it can be replaced by Set Property
+        // WuTongDB does not support deleting table attributes, it can be replaced by Set Property
         throw new IllegalArgumentException("Remove property is not supported yet");
       } else if (change instanceof TableChange.AddColumn) {
         TableChange.AddColumn addColumn = (TableChange.AddColumn) change;
@@ -291,7 +291,7 @@ public class WutongTableOperations extends JdbcTableOperations {
             updateColumnCommentFieldDefinition(
                 (TableChange.UpdateColumnComment) change, tableName));
       } else if (change instanceof TableChange.UpdateColumnPosition) {
-        throw new IllegalArgumentException("PostgreSQL does not support column position.");
+        throw new IllegalArgumentException("WuTongDB does not support column position.");
       } else if (change instanceof TableChange.DeleteColumn) {
         lazyLoadTable = getOrCreateTable(schemaName, tableName, lazyLoadTable);
         TableChange.DeleteColumn deleteColumn = (TableChange.DeleteColumn) change;
@@ -336,7 +336,7 @@ public class WutongTableOperations extends JdbcTableOperations {
   static String updateColumnAutoIncrementDefinition(
       TableChange.UpdateColumnAutoIncrement change, String tableName) {
     if (change.fieldName().length > 1) {
-      throw new UnsupportedOperationException(POSTGRESQL_NOT_SUPPORT_NESTED_COLUMN_MSG);
+      throw new UnsupportedOperationException(WUTONGDB_NOT_SUPPORT_NESTED_COLUMN_MSG);
     }
     String fieldName = change.fieldName()[0];
     String action =
@@ -407,7 +407,7 @@ public class WutongTableOperations extends JdbcTableOperations {
   private String updateColumnNullabilityDefinition(
       TableChange.UpdateColumnNullability updateColumnNullability, String tableName) {
     if (updateColumnNullability.fieldName().length > 1) {
-      throw new UnsupportedOperationException(POSTGRESQL_NOT_SUPPORT_NESTED_COLUMN_MSG);
+      throw new UnsupportedOperationException(WUTONGDB_NOT_SUPPORT_NESTED_COLUMN_MSG);
     }
     String col = updateColumnNullability.fieldName()[0];
     if (updateColumnNullability.nullable()) {
@@ -453,7 +453,7 @@ public class WutongTableOperations extends JdbcTableOperations {
   private String deleteColumnFieldDefinition(
       TableChange.DeleteColumn deleteColumn, JdbcTable table) {
     if (deleteColumn.fieldName().length > 1) {
-      throw new UnsupportedOperationException(POSTGRESQL_NOT_SUPPORT_NESTED_COLUMN_MSG);
+      throw new UnsupportedOperationException(WUTONGDB_NOT_SUPPORT_NESTED_COLUMN_MSG);
     }
     String col = deleteColumn.fieldName()[0];
     boolean colExists =
@@ -479,7 +479,7 @@ public class WutongTableOperations extends JdbcTableOperations {
   private String updateColumnDefaultValueFieldDefinition(
       TableChange.UpdateColumnDefaultValue updateColumnDefaultValue, JdbcTable jdbcTable) {
     if (updateColumnDefaultValue.fieldName().length > 1) {
-      throw new UnsupportedOperationException(POSTGRESQL_NOT_SUPPORT_NESTED_COLUMN_MSG);
+      throw new UnsupportedOperationException(WUTONGDB_NOT_SUPPORT_NESTED_COLUMN_MSG);
     }
     String col = updateColumnDefaultValue.fieldName()[0];
     JdbcColumn column =
@@ -510,7 +510,7 @@ public class WutongTableOperations extends JdbcTableOperations {
   private String updateColumnTypeFieldDefinition(
       TableChange.UpdateColumnType updateColumnType, JdbcTable jdbcTable) {
     if (updateColumnType.fieldName().length > 1) {
-      throw new UnsupportedOperationException(POSTGRESQL_NOT_SUPPORT_NESTED_COLUMN_MSG);
+      throw new UnsupportedOperationException(WUTONGDB_NOT_SUPPORT_NESTED_COLUMN_MSG);
     }
     String col = updateColumnType.fieldName()[0];
     JdbcColumn column =
@@ -546,7 +546,7 @@ public class WutongTableOperations extends JdbcTableOperations {
   private String renameColumnFieldDefinition(
       TableChange.RenameColumn renameColumn, String tableName) {
     if (renameColumn.fieldName().length > 1) {
-      throw new UnsupportedOperationException(POSTGRESQL_NOT_SUPPORT_NESTED_COLUMN_MSG);
+      throw new UnsupportedOperationException(WUTONGDB_NOT_SUPPORT_NESTED_COLUMN_MSG);
     }
     return ALTER_TABLE
         + tableName
@@ -574,7 +574,7 @@ public class WutongTableOperations extends JdbcTableOperations {
   private List<String> addColumnFieldDefinition(
       TableChange.AddColumn addColumn, JdbcTable lazyLoadTable) {
     if (addColumn.fieldName().length > 1) {
-      throw new UnsupportedOperationException(POSTGRESQL_NOT_SUPPORT_NESTED_COLUMN_MSG);
+      throw new UnsupportedOperationException(WUTONGDB_NOT_SUPPORT_NESTED_COLUMN_MSG);
     }
     List<String> result = new ArrayList<>();
     String col = addColumn.fieldName()[0];
@@ -618,8 +618,7 @@ public class WutongTableOperations extends JdbcTableOperations {
 
     // Append position if available
     if (!(addColumn.getPosition() instanceof TableChange.Default)) {
-      throw new IllegalArgumentException(
-          "PostgreSQL does not support column position in gravitino.");
+      throw new IllegalArgumentException("WuTongDB does not support column position in gravitino.");
     }
     result.add(columnDefinition.append(";").toString());
 
@@ -645,7 +644,7 @@ public class WutongTableOperations extends JdbcTableOperations {
       TableChange.UpdateColumnComment updateColumnComment, String tableName) {
     String newComment = updateColumnComment.getNewComment();
     if (updateColumnComment.fieldName().length > 1) {
-      throw new UnsupportedOperationException(POSTGRESQL_NOT_SUPPORT_NESTED_COLUMN_MSG);
+      throw new UnsupportedOperationException(WUTONGDB_NOT_SUPPORT_NESTED_COLUMN_MSG);
     }
     String col = updateColumnComment.fieldName()[0];
     return COLUMN_COMMENT

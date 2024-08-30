@@ -4,12 +4,6 @@
  */
 package org.apache.gravitino.catalog.wutong.operation;
 
-import org.apache.gravitino.catalog.jdbc.JdbcSchema;
-import org.apache.gravitino.catalog.jdbc.config.JdbcConfig;
-import org.apache.gravitino.catalog.jdbc.converter.JdbcExceptionConverter;
-import org.apache.gravitino.catalog.jdbc.operation.JdbcDatabaseOperations;
-import org.apache.gravitino.exceptions.NoSuchSchemaException;
-import org.apache.gravitino.meta.AuditInfo;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -26,8 +20,14 @@ import java.util.Set;
 import javax.sql.DataSource;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.gravitino.catalog.jdbc.JdbcSchema;
+import org.apache.gravitino.catalog.jdbc.config.JdbcConfig;
+import org.apache.gravitino.catalog.jdbc.converter.JdbcExceptionConverter;
+import org.apache.gravitino.catalog.jdbc.operation.JdbcDatabaseOperations;
+import org.apache.gravitino.exceptions.NoSuchSchemaException;
+import org.apache.gravitino.meta.AuditInfo;
 
-/** Database operations for PostgreSQL. */
+/** Database operations for WuTongDB. */
 public class WutongSchemaOperations extends JdbcDatabaseOperations {
 
   public static final Set<String> SYS_PG_DATABASE_NAMES =
@@ -100,7 +100,7 @@ public class WutongSchemaOperations extends JdbcDatabaseOperations {
       String schema, String comment, Map<String, String> properties) {
     if (MapUtils.isNotEmpty(properties)) {
       throw new UnsupportedOperationException(
-          "PostgreSQL does not support properties on database create.");
+          "WuTongDB does not support properties on database create.");
     }
 
     StringBuilder sqlBuilder = new StringBuilder("CREATE SCHEMA " + schema + ";");

@@ -88,7 +88,7 @@ export const providers = [
         value: '',
         required: true,
         hide: 'hive',
-        description: `"com.mysql.jdbc.Driver" or "com.mysql.cj.jdbc.Driver" for MySQL, "org.postgresql.Driver" for PostgreSQL`
+        description: `"com.mysql.jdbc.Driver" or "com.mysql.cj.jdbc.Driver" for MySQL, "org.postgresql.Driver" for PostgreSQL, "com.wutong.Driver" for WuTongDB`
       },
       {
         key: 'jdbc-user',
@@ -171,15 +171,15 @@ export const providers = [
     defaultProps: [
       {
         key: 'jdbc-driver',
-        value: '',
+        value: 'com.wutong.Driver',
         required: true,
-        description: 'e.g. org.postgresql.Driver'
+        description: 'e.g. com.wutong.Driver'
       },
       {
         key: 'jdbc-url',
         value: '',
         required: true,
-        description: 'e.g. jdbc:postgresql://localhost:5432/your_database'
+        description: 'e.g. jdbc:wutongdb://localhost:5432/your_database'
       },
       {
         key: 'jdbc-user',

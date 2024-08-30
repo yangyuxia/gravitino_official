@@ -112,7 +112,9 @@ licenseReport {
   renderers = arrayOf<ReportRenderer>(InventoryHtmlReportRenderer("report.html", "Backend"))
   filters = arrayOf<DependencyFilter>(LicenseBundleNormalizer())
 }
-repositories { mavenCentral() }
+repositories {
+  mavenCentral()
+}
 
 allprojects {
   // Gravitino Python client project didn't need to apply the Spotless plugin
@@ -123,7 +125,6 @@ allprojects {
   apply(plugin = "com.diffplug.spotless")
   repositories {
     mavenCentral()
-    mavenLocal()
   }
 
   plugins.withType<com.diffplug.gradle.spotless.SpotlessPlugin>().configureEach {
