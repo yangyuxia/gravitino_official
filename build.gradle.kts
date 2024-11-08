@@ -112,7 +112,12 @@ licenseReport {
   renderers = arrayOf<ReportRenderer>(InventoryHtmlReportRenderer("report.html", "Backend"))
   filters = arrayOf<DependencyFilter>(LicenseBundleNormalizer())
 }
-repositories { mavenCentral() }
+repositories { 
+  maven {
+    setUrl("https://maven.aliyun.com/repository/public/")
+  }
+  mavenCentral()
+}
 
 allprojects {
   // Gravitino Python client project didn't need to apply the Spotless plugin
@@ -122,6 +127,9 @@ allprojects {
 
   apply(plugin = "com.diffplug.spotless")
   repositories {
+    maven {
+      setUrl("https://maven.aliyun.com/repository/public/")
+    }
     mavenCentral()
     mavenLocal()
   }
@@ -363,9 +371,16 @@ subprojects {
     plugins.apply(NodePlugin::class)
     configure<NodeExtension> {
       version.set("20.9.0")
+      distBaseUrl.set("https://mirrors.huaweicloud.com/nodejs")
       pnpmVersion.set("9.x")
       nodeProjectDir.set(file("$rootDir/.node"))
       download.set(true)
+    }
+    tasks.named<com.github.gradle.node.npm.task.NpmSetupTask>("npmSetup") {
+      args.addAll(listOf("--registry", "https://mirrors.tuna.tsinghua.edu.cn"))
+    }
+    tasks.named<com.github.gradle.node.pnpm.task.PnpmInstallTask>("pnpmInstall"){
+      args.addAll(listOf("--registry", "https://mirrors.tuna.tsinghua.edu.cn"))
     }
   }
 

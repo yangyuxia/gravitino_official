@@ -98,6 +98,7 @@ if [ ! -e $APP_HOME/gradle/wrapper/gradle-wrapper.jar ]; then
     else
       GRADLE_TAG="v$GRADLE_VERSION"
     fi
+    #GRADLE_WRAPPER_URL="https://raw.githubusercontent.com/gradle/gradle/${GRADLE_TAG}/gradle/wrapper/gradle-wrapper.jar"
     GRADLE_WRAPPER_URL="https://raw.githubusercontent.com/gradle/gradle/${GRADLE_TAG}/gradle/wrapper/gradle-wrapper.jar"
     echo "Downloading $GRADLE_WRAPPER_URL"
     curl -o $APP_HOME/gradle/wrapper/gradle-wrapper.jar "$GRADLE_WRAPPER_URL"
