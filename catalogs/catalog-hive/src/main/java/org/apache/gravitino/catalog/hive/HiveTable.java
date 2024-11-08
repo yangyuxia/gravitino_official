@@ -185,6 +185,10 @@ public class HiveTable extends BaseTable {
                     (k, v) ->
                         properties.put(HiveTablePropertiesMetadata.SERDE_PARAMETER_PREFIX + k, v)));
 
+    properties.put("isCompressed",""+sd.isCompressed());
+    properties.put("lastAccessTime",""+table.getLastAccessTime());
+    properties.put("dbName",table.getDbName());
+
     return properties;
   }
 
