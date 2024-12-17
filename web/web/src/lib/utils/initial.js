@@ -90,7 +90,7 @@ export const providers = [
         required: true,
         parentField: 'catalog-backend',
         hide: ['hive'],
-        description: `"com.mysql.jdbc.Driver" or "com.mysql.cj.jdbc.Driver" for MySQL, "org.postgresql.Driver" for PostgreSQL`
+        description: `"com.mysql.jdbc.Driver" or "com.mysql.cj.jdbc.Driver" for MySQL, "org.postgresql.Driver" for PostgreSQL`, "com.wutong.Driver" for WuTongDB`
       },
       {
         key: 'jdbc-user',
@@ -176,6 +176,39 @@ export const providers = [
         value: '',
         required: true,
         description: 'e.g. jdbc:postgresql://localhost:5432/your_database'
+      },
+      {
+        key: 'jdbc-user',
+        value: '',
+        required: true
+      },
+      {
+        key: 'jdbc-password',
+        value: '',
+        required: true
+      },
+      {
+        key: 'jdbc-database',
+        value: '',
+        required: true
+      }
+    ]
+  },
+  {
+    label: 'Wutong',
+    value: 'jdbc-wutong',
+    defaultProps: [
+      {
+        key: 'jdbc-driver',
+        value: 'com.wutong.Driver',
+        required: true,
+        description: 'e.g. com.wutong.Driver'
+      },
+      {
+        key: 'jdbc-url',
+        value: '',
+        required: true,
+        description: 'e.g. jdbc:wutongdb://localhost:5432/your_database'
       },
       {
         key: 'jdbc-user',

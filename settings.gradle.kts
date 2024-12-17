@@ -38,6 +38,7 @@ include(
   "catalogs:catalog-jdbc-mysql",
   "catalogs:catalog-jdbc-clickhouse",
   "catalogs:catalog-jdbc-postgresql",
+  "catalogs:catalog-jdbc-wutong",
   "catalogs:catalog-jdbc-oceanbase"
 )
 include("catalogs:catalog-hadoop")
