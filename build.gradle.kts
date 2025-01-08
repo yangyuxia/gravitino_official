@@ -825,7 +825,8 @@ tasks {
 
   register("copyAuthorizationLibAndConfigs", Copy::class) {
     dependsOn(
-      ":authorizations:authorization-ranger:copyLibAndConfig"
+      ":authorizations:authorization-ranger:copyLibAndConfig",
+      ":authorizations:authorization-postgresql:copyLibAndConfig"
     )
   }
 

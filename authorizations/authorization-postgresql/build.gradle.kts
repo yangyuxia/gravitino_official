@@ -34,9 +34,7 @@ dependencies {
   implementation(project(":common")) {
     exclude(group = "*")
   }
-  implementation(project(":authorizations:authorization-common")){
-    exclude(group = "*")
-  }
+  implementation(project(":authorizations:authorization-common"))
   implementation(libs.bundles.log4j)
   implementation(libs.commons.lang3)
   implementation(libs.commons.dbcp2)
@@ -53,6 +51,31 @@ dependencies {
   testImplementation(libs.mockito.core)
   testImplementation(libs.testcontainers)
   testRuntimeOnly(libs.junit.jupiter.engine)
+}
+
+tasks {
+  val runtimeJars by registering(Copy::class) {
+    from(configurations.runtimeClasspath)
+    into("build/libs")
+  }
+
+  val copyAuthorizationLibs by registering(Copy::class) {
+    dependsOn("jar", runtimeJars)
+    from("build/libs") {
+      exclude("guava-*.jar")
+      exclude("log4j-*.jar")
+      exclude("slf4j-*.jar")
+    }
+    into("$rootDir/distribution/package/authorizations/ranger/libs")
+  }
+
+  register("copyLibAndConfig", Copy::class) {
+    dependsOn(copyAuthorizationLibs)
+  }
+
+  jar {
+    dependsOn(runtimeJars)
+  }
 }
 
 tasks.test {

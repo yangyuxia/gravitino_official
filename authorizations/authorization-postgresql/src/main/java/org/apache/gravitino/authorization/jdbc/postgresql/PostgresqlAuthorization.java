@@ -13,7 +13,7 @@ public class PostgresqlAuthorization extends BaseAuthorization<PostgresqlAuthori
   }
 
   @Override
-  protected AuthorizationPlugin newPlugin(String catalogProvider, Map<String, String> config) {
+  public AuthorizationPlugin newPlugin(String metalake, String catalogProvider, Map<String, String> config) {
     return PostgresqlJdbcAuthorizationPlugin.getInstance(config);
   }
 
