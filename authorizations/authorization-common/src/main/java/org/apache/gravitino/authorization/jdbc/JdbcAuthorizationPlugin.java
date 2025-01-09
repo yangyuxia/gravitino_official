@@ -140,7 +140,7 @@ public abstract class JdbcAuthorizationPlugin implements AuthorizationPlugin, Jd
   @Override
   public Boolean onRoleUpdated(Role role, RoleChange... changes)
       throws AuthorizationPluginException {
-    onRoleCreated(role);
+    // onRoleCreated(role);
     for (RoleChange change : changes) {
       if (change instanceof RoleChange.AddSecurableObject) {
         SecurableObject object = ((RoleChange.AddSecurableObject) change).getSecurableObject();
@@ -167,7 +167,7 @@ public abstract class JdbcAuthorizationPlugin implements AuthorizationPlugin, Jd
       throws AuthorizationPluginException {
 
     for (Role role : roles) {
-      onRoleCreated(role);
+      // onRoleCreated(role);
       List<String> sqls = getGrantRoleSQL(role.name(), "USER", user.name());
       for (String sql : sqls) {
         executeUpdateSQL(sql);
@@ -181,7 +181,7 @@ public abstract class JdbcAuthorizationPlugin implements AuthorizationPlugin, Jd
       throws AuthorizationPluginException {
 
     for (Role role : roles) {
-      onRoleCreated(role);
+      // onRoleCreated(role);
       List<String> sqls = getRevokeRoleSQL(role.name(), "USER", user.name());
       for (String sql : sqls) {
         executeUpdateSQL(sql);
@@ -195,7 +195,7 @@ public abstract class JdbcAuthorizationPlugin implements AuthorizationPlugin, Jd
       throws AuthorizationPluginException {
 
     for (Role role : roles) {
-      onRoleCreated(role);
+      // onRoleCreated(role);
       List<String> sqls =
           getGrantRoleSQL(role.name(), "USER", String.format("%s%s", GROUP_PREFIX, group.name()));
       for (String sql : sqls) {
@@ -210,7 +210,7 @@ public abstract class JdbcAuthorizationPlugin implements AuthorizationPlugin, Jd
       throws AuthorizationPluginException {
 
     for (Role role : roles) {
-      onRoleCreated(role);
+      // onRoleCreated(role);
       List<String> sqls =
           getRevokeRoleSQL(role.name(), "USER", String.format("%s%s", GROUP_PREFIX, group.name()));
       for (String sql : sqls) {
@@ -304,22 +304,22 @@ public abstract class JdbcAuthorizationPlugin implements AuthorizationPlugin, Jd
 
   @Override
   public List<String> getCreateUserSQL(String username) {
-    return Lists.newArrayList(String.format("CREATE USER %s", username));
+    return Lists.newArrayList(String.format("CREATE USER if not exists %s", username));
   }
 
   @Override
   public List<String> getDropUserSQL(String username) {
-    return Lists.newArrayList(String.format("DROP USER %s", username));
+    return Lists.newArrayList(String.format("DROP USER if exists %s", username));
   }
 
   @Override
   public List<String> getCreateRoleSQL(String roleName) {
-    return Lists.newArrayList(String.format("CREATE ROLE %s", roleName));
+    return Lists.newArrayList(String.format("CREATE ROLE if not exists %s", roleName));
   }
 
   @Override
   public List<String> getDropRoleSQL(String roleName) {
-    return Lists.newArrayList(String.format("DROP ROLE %s", roleName));
+    return Lists.newArrayList(String.format("DROP ROLE if exists %s", roleName));
   }
 
   @Override
@@ -382,6 +382,7 @@ public abstract class JdbcAuthorizationPlugin implements AuthorizationPlugin, Jd
   }
 
   public void executeUpdateSQL(String sql, String ignoreErrorMsg) {
+    LOG.info(sql);
     try (final Connection connection = getConnection()) {
       try (final Statement statement = connection.createStatement()) {
         statement.executeUpdate(sql);
