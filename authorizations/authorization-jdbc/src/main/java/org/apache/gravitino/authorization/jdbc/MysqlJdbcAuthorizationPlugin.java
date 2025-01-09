@@ -1,12 +1,11 @@
 package org.apache.gravitino.authorization.jdbc;
 
+import java.util.List;
+import java.util.Map;
 import org.apache.gravitino.MetadataObject;
 import org.apache.gravitino.authorization.Owner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.Map;
 
 public class MysqlJdbcAuthorizationPlugin extends JdbcAuthorizationPlugin {
   private static final Logger LOG = LoggerFactory.getLogger(MysqlJdbcAuthorizationPlugin.class);
@@ -28,7 +27,8 @@ public class MysqlJdbcAuthorizationPlugin extends JdbcAuthorizationPlugin {
   }
 
   @Override
-  public List<String> getSetOwnerSQL(MetadataObject.Type type, String objectName, Owner preOwner, Owner newOwner) {
+  public List<String> getSetOwnerSQL(
+      MetadataObject.Type type, String objectName, Owner preOwner, Owner newOwner) {
     return null;
   }
 }

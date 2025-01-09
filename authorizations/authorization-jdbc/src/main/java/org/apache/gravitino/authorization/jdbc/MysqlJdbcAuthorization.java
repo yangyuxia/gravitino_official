@@ -13,9 +13,8 @@ public class MysqlJdbcAuthorization extends BaseAuthorization<MysqlJdbcAuthoriza
   }
 
   @Override
-  public AuthorizationPlugin newPlugin(String metalake, String catalogProvider, Map<String, String> config) {
+  public AuthorizationPlugin newPlugin(
+      String metalake, String catalogProvider, Map<String, String> config) {
     return MysqlJdbcAuthorizationPlugin.getInstance(config);
   }
-
-
 }
